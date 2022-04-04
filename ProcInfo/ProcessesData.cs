@@ -29,7 +29,17 @@ namespace ProcInfo
                 i++;
             }
             return target;
-
+        }
+        public static List<Process> GetProcessList()
+        {
+            try
+            {
+                return Process.GetProcesses().ToList();
+            }
+            catch (ArgumentNullException)
+            {
+                return new List<Process>();
+            }
         }
     }
 }
