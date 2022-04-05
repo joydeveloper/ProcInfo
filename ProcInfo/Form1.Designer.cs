@@ -26,6 +26,7 @@
         /// Требуемый метод для поддержки конструктора — не изменяйте 
         /// содержимое этого метода с помощью редактора кода.
         /// </summary>
+        
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
@@ -35,6 +36,7 @@
             this.processGridView = new System.Windows.Forms.DataGridView();
             this.startBut = new System.Windows.Forms.Button();
             this.infolab = new System.Windows.Forms.Label();
+            this.recordscountlab = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.processGridView)).BeginInit();
             this.SuspendLayout();
             // 
@@ -43,7 +45,7 @@
             this.debuglabel.AutoSize = true;
             this.debuglabel.BackColor = System.Drawing.SystemColors.ActiveCaptionText;
             this.debuglabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.debuglabel.Location = new System.Drawing.Point(112, 507);
+            this.debuglabel.Location = new System.Drawing.Point(124, 504);
             this.debuglabel.Name = "debuglabel";
             this.debuglabel.Size = new System.Drawing.Size(51, 20);
             this.debuglabel.TabIndex = 0;
@@ -56,7 +58,7 @@
             // processcounterlab
             // 
             this.processcounterlab.AutoSize = true;
-            this.processcounterlab.Location = new System.Drawing.Point(295, 476);
+            this.processcounterlab.Location = new System.Drawing.Point(365, 479);
             this.processcounterlab.Name = "processcounterlab";
             this.processcounterlab.Size = new System.Drawing.Size(35, 13);
             this.processcounterlab.TabIndex = 1;
@@ -83,16 +85,26 @@
             this.startBut.TabIndex = 3;
             this.startBut.Text = "Stop";
             this.startBut.UseVisualStyleBackColor = false;
+          
             this.startBut.Click += new System.EventHandler(this.button1_Click);
             // 
             // infolab
             // 
             this.infolab.AutoSize = true;
-            this.infolab.Location = new System.Drawing.Point(113, 476);
+            this.infolab.Location = new System.Drawing.Point(125, 479);
             this.infolab.Name = "infolab";
             this.infolab.Size = new System.Drawing.Size(35, 13);
             this.infolab.TabIndex = 4;
             this.infolab.Text = "label1";
+            // 
+            // recordscountlab
+            // 
+            this.recordscountlab.AutoSize = true;
+            this.recordscountlab.Location = new System.Drawing.Point(368, 510);
+            this.recordscountlab.Name = "recordscountlab";
+            this.recordscountlab.Size = new System.Drawing.Size(35, 13);
+            this.recordscountlab.TabIndex = 5;
+            this.recordscountlab.Text = "label1";
             // 
             // mainForm
             // 
@@ -100,14 +112,16 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.ActiveCaption;
             this.ClientSize = new System.Drawing.Size(459, 536);
+            this.Controls.Add(this.recordscountlab);
             this.Controls.Add(this.infolab);
             this.Controls.Add(this.startBut);
             this.Controls.Add(this.processGridView);
             this.Controls.Add(this.processcounterlab);
             this.Controls.Add(this.debuglabel);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Name = "mainForm";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "ProcViewer";
-            this.TopMost = true;
             this.Load += new System.EventHandler(this.mainForm_Load);
             this.Shown += new System.EventHandler(this.mainForm_Shown);
             ((System.ComponentModel.ISupportInitialize)(this.processGridView)).EndInit();
@@ -124,6 +138,7 @@
         private System.Windows.Forms.DataGridView processGridView;
         private System.Windows.Forms.Button startBut;
         private System.Windows.Forms.Label infolab;
+        private System.Windows.Forms.Label recordscountlab;
     }
 }
 

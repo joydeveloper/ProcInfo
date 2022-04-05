@@ -41,5 +41,14 @@ namespace ProcInfo
                 return new List<Process>();
             }
         }
+        public static List<string> GetProcessStringList()
+        {
+            List<string> target = new List<string>();
+            foreach (Process proc in Process.GetProcesses())
+            {
+                target.Add(proc.Id + "*" + proc.ProcessName);
+            }
+            return target;
+        }
     }
 }
