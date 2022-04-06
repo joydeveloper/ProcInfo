@@ -40,7 +40,6 @@ namespace ProcInfo
             LabelsSetup();
             TableSetup();
             GridSetup();
-            InitializeTimer();
             OnLoggedEvent("FormLoad " + DateTime.Now.ToString(), LoggerRecordType.UI);
         }
         private void LabelsSetup()
@@ -57,7 +56,7 @@ namespace ProcInfo
         private void TableSetup()
         {
             _defaultdata = new DataTable();
-            _defaultdata.Columns.Add("ID");
+            _defaultdata.Columns.Add("ID",Type.GetType("System.Int32"));
             _defaultdata.Columns.Add("Name");
             string[] values = new string[ProcessesData.GetProcessStringList().Count];
             foreach (string s in ProcessesData.GetProcessStringList())
@@ -72,67 +71,57 @@ namespace ProcInfo
         }
         private void TableUpdate()
         {
-            //int[] indexes = new int[ProcessesData.GetIDsInt().Length];
-            //indexes = ProcessesData.GetIDsInt();
-            //int indexcounter = 0;
-            //foreach (int idx in ProcessesData.GetIDsInt())
-            //{
-            //    indexes[indexcounter] = idx;
-            //    indexcounter++;
-            //}
-            //if (_defaultdata.Rows.Count > indexes.Length)
-            //{
-
-            //    for (int i = 0; i < indexes.Length; i++)
-            //    {
-            //        var dr = _defaultdata.Rows.Find(indexes[i]);
-            //        if (dr == null)
-            //        {
-            //            try
-            //            {
-            //                dr.Delete();
-            //                MessageBox.Show("F");
-            //                //  _defaultdata.Rows[i].Delete();
-            //            }
-            //            catch (DeletedRowInaccessibleException)
-            //            {
-            //                TableSetup();
-            //            }
-            //        }
-            //    }
-            //    _defaultdata.AcceptChanges();
-            //}
-            //else if (_defaultdata.Rows.Count < indexes.Length)
-            //{
-            //    string[] values = new string[2];
-            //    for (int i = 0; i < indexes.Length; i++)
-            //    {
-
-            //        var dr = _defaultdata.Rows.Find(indexes[i]);
-            //        if (dr == null)
-            //        {
-            //            values = ProcessesData.GetProcessStringList()[i].Split('*');
-            //            object[] rows = new object[] { values[0], values[1] };
-            //            try
-            //            {
-            //                _defaultdata.Rows.Add(rows);
-            //            }
-            //            catch (ArgumentException)
-            //            {
-            //                TableSetup();
-            //            }
-            //            catch (ConstraintException)
-            //            {
-            //                TableSetup();
-            //            }
-            //            catch (NoNullAllowedException)
-            //            {
-            //                TableSetup();
-            //            }
-
-            //        }
-            //    }
-            //}
+            int[] indexes = new int[ProcessesData.GetIDsInt().Length];
+            int indexcounter = 0;
+            List<DataRow> deletedlist = new List<DataRow>();
+            foreach (int idx in ProcessesData.GetIDsInt())
+            {
+                indexes[indexcounter] = idx;
+                indexcounter++;
+            }
+            indexcounter = 0;
+            if (_defaultdata.Rows.Count > indexes.Length)
+            {
+                for(int i=0;i<_defaultdata.Rows.Count;i++) 
+                {
+                  if(!indexes.Contains(_defaultdata.Rows[i].Field<int>("ID")))
+                    {
+                        OnLoggedEvent("Delete process"+ _defaultdata.Rows[i].Field<string>("Name"), LoggerRecordType.DataEvent);
+                        _defaultdata.Rows.Remove(_defaultdata.Rows[i]);
+                    }
+                }
+            }
+            else if (_defaultdata.Rows.Count < indexes.Length)
+            {
+                indexcounter = 0;
+                string[] values = new string[2];
+                foreach (int idx in indexes)
+                {
+                    if (!_defaultdata.Rows.Contains(idx))
+                    {
+                        values = ProcessesData.GetProcessStringList()[indexcounter].Split('*');
+                        object[] rows = new object[] { values[0], values[1] };
+                        try
+                        {
+                            _defaultdata.Rows.Add(rows);
+                            OnLoggedEvent("Add process Name " + rows[1], LoggerRecordType.DataEvent);
+                        }
+                        catch (ArgumentException)
+                        {
+                            TableSetup();
+                        }
+                        catch (ConstraintException)
+                        {
+                            TableSetup();
+                        }
+                        catch (NoNullAllowedException)
+                        {
+                            TableSetup();
+                        }
+                    }
+                    indexcounter++;
+                }
+            }
         }
         private void TableRefresh()
         {
@@ -162,7 +151,6 @@ namespace ProcInfo
                     OnLoggedEvent("NoNullAlowedException", LoggerRecordType.Exeption);
                 }
             }
-
         }
         private void OnLoggedEvent(string text, LoggerRecordType type)
         {
@@ -203,6 +191,7 @@ namespace ProcInfo
         private void mainForm_Shown(object sender, EventArgs e)
         {
             ThreadSetup();
+            InitializeTimer();
         }
         private void ThreadSetup()
         {
@@ -230,13 +219,7 @@ namespace ProcInfo
         {
             if (_defaultdata.Rows.Count != ProcessesData.GetIDsInt().Length)
             {
-
-                TableRefresh();
-                OnLoggedEvent("DataChange", LoggerRecordType.DataEvent);
-            }
-            else
-            {
-                //debuglabel.Text = "Wait";
+                TableUpdate();
             }
             processcounterlab.Text = "Процессов:" + ProcessesData.GetIDsInt().Length;
             infolab.Text = _additionalInfoThread.ThreadState.ToString();
@@ -289,14 +272,27 @@ namespace ProcInfo
             startBut.BackColor = Color.Firebrick;
             startBut.Text = "Stop";
             _isStarted = true;
-            _additionalInfoThread.Resume();
+            try
+            {
+                _additionalInfoThread.Resume();
+            }
+            catch (ThreadStateException)
+            {
+                MessageBox.Show("Thread control exсeption");
+                _additionalInfoThread.Start();
+                OnLoggedEvent("Thread control exсeption", LoggerRecordType.Exeption);
+            }
+            catch (System.Security.SecurityException s)
+            {
+                MessageBox.Show(s.Message);
+            }
+          
             OnLoggedEvent("Thread Resumed", LoggerRecordType.ThreadEvent);
         }
         private void GetProcessList()
         {
             InfoListCallback call = new InfoListCallback(InfoCallBackResult);
             List<string> temp = new List<string>();
-
             while (_isStarted)
             {
                 temp.Clear();
@@ -346,7 +342,6 @@ namespace ProcInfo
         }
         private void ShowInfolForm(int id)
         {
-
             if (infoForm == null)
             {
                 infoForm_Init();
